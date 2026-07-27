@@ -73,20 +73,26 @@ export default function ConfigPanel({
         onChange={handleFileSelected}
       />
 
-      <Box>
-        <HStack gap="2" mb="1">
-          <Heading size="md">{algorithm.name}</Heading>
-          <Badge colorPalette="gray" variant="subtle">
-            {algorithm.codename}
-          </Badge>
-          <Badge colorPalette="blue" variant="subtle">
-            {algorithm.fips}
-          </Badge>
-        </HStack>
-        <Text fontSize="sm" color="fg.muted">
-          {algorithm.description}
-        </Text>
-      </Box>
+      <HStack justify="space-between" align="flex-start">
+        <Box>
+          <HStack gap="2" mb="1">
+            <Heading size="md">{algorithm.name}</Heading>
+            <Badge colorPalette="gray" variant="subtle">
+              {algorithm.codename}
+            </Badge>
+            <Badge colorPalette="blue" variant="subtle">
+              {algorithm.fips}
+            </Badge>
+          </HStack>
+          <Text fontSize="sm" color="fg.muted">
+            {algorithm.description}
+          </Text>
+        </Box>
+        <Button colorPalette="blue" onClick={onRun} flexShrink="0">
+          <LuPlay />
+          Run
+        </Button>
+      </HStack>
 
       <HStack gap="4" flexWrap="wrap">
         <Box minW="40">
@@ -145,13 +151,6 @@ export default function ConfigPanel({
           ))}
         </Stack>
       )}
-
-      <HStack justify="flex-end">
-        <Button colorPalette="blue" onClick={onRun}>
-          <LuPlay />
-          Run
-        </Button>
-      </HStack>
     </Stack>
   )
 }

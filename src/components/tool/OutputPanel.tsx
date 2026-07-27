@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import {
   Box,
   Center,
@@ -84,6 +84,14 @@ interface OutputFieldProps {
 
 function OutputField({ label, value, binary, fileName, color }: OutputFieldProps) {
   const [copied, setCopied] = useState(false)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = "auto"
+    el.style.height = `${el.scrollHeight}px`
+  }, [value])
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(value)
@@ -130,12 +138,14 @@ function OutputField({ label, value, binary, fileName, color }: OutputFieldProps
         </HStack>
       </HStack>
       <Textarea
+        ref={textareaRef}
         value={value}
         readOnly
         fontFamily="mono"
         fontSize="sm"
         minH="20"
         resize="none"
+        overflow="hidden"
         bg="bg.subtle"
         color={color}
       />
