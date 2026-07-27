@@ -88,7 +88,7 @@ export default function AlgorithmSidebar({
                       rounded="md"
                       bg={selected ? "colorPalette.subtle" : "transparent"}
                       color={selected ? "colorPalette.fg" : "fg.default"}
-                      colorPalette="blue"
+                      colorPalette="brand"
                       _hover={{ bg: selected ? "colorPalette.subtle" : "bg.muted" }}
                       transition="background 0.15s"
                     >

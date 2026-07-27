@@ -1,11 +1,24 @@
 import { useState } from "react"
-import { Grid, GridItem } from "@chakra-ui/react"
+import { Box, Grid, GridItem, type BoxProps } from "@chakra-ui/react"
 import AlgorithmSidebar from "@/components/tool/AlgorithmSidebar"
 import ConfigPanel from "@/components/tool/ConfigPanel"
 import OutputPanel from "@/components/tool/OutputPanel"
 import { algorithms } from "@/data/algorithms"
 import { algorithmRegistry } from "@/lib/registry"
 import type { Algorithm, OperationPayload, OperationResult } from "@/types/algorithm"
+
+const glassPanel: BoxProps = {
+  bg: { base: "whiteAlpha.600", _dark: "whiteAlpha.50" },
+  backdropFilter: "blur(24px) saturate(160%)",
+  borderWidth: "1px",
+  borderColor: { base: "whiteAlpha.700", _dark: "whiteAlpha.100" },
+  rounded: "xl",
+  boxShadow: {
+    base: "0 4px 24px -4px rgba(18, 67, 66, 0.08), inset 0 1px 0 rgba(255,255,255,0.5)",
+    _dark: "0 4px 24px -4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.06)",
+  },
+  overflow: "hidden",
+}
 
 export default function Home() {
   const [algorithm, setAlgorithm] = useState<Algorithm>(algorithms[0])
@@ -56,6 +69,8 @@ export default function Home() {
   return (
     <Grid
       h="full"
+      p={{ base: "3", md: "4" }}
+      gap={{ base: "3", md: "4" }}
       templateColumns={{ base: "1fr", md: "260px 1fr", xl: "280px 1fr 1fr" }}
       templateRows={{ base: "auto auto auto", md: "1fr 1fr", xl: "1fr" }}
       templateAreas={{
@@ -64,38 +79,39 @@ export default function Home() {
         xl: `"sidebar center output"`,
       }}
     >
-      <GridItem area="sidebar" minH="0">
-        <AlgorithmSidebar
-          selectedId={algorithm.id}
-          onSelect={handleSelectAlgorithm}
-        />
+      <GridItem area="sidebar" minH="0" asChild>
+        <Box {...glassPanel}>
+          <AlgorithmSidebar
+            selectedId={algorithm.id}
+            onSelect={handleSelectAlgorithm}
+          />
+        </Box>
       </GridItem>
 
-      <GridItem
-        area="center"
-        minH="0"
-        borderRightWidth={{ base: "0", xl: "1px" }}
-        borderBottomWidth={{ base: "1px", xl: "0" }}
-      >
-        <ConfigPanel
-          algorithm={algorithm}
-          variantId={variantId}
-          onVariantChange={setVariantId}
-          operation={operation}
-          onOperationChange={handleOperationChange}
-          payload={payload}
-          onPayloadChange={handlePayloadChange}
-          onRun={handleRun}
-        />
+      <GridItem area="center" minH="0" asChild>
+        <Box {...glassPanel}>
+          <ConfigPanel
+            algorithm={algorithm}
+            variantId={variantId}
+            onVariantChange={setVariantId}
+            operation={operation}
+            onOperationChange={handleOperationChange}
+            payload={payload}
+            onPayloadChange={handlePayloadChange}
+            onRun={handleRun}
+          />
+        </Box>
       </GridItem>
 
-      <GridItem area="output" minH="0">
-        <OutputPanel
-          algorithmId={algorithm.id}
-          variantId={variantId}
-          result={result}
-          error={error}
-        />
+      <GridItem area="output" minH="0" asChild>
+        <Box {...glassPanel}>
+          <OutputPanel
+            algorithmId={algorithm.id}
+            variantId={variantId}
+            result={result}
+            error={error}
+          />
+        </Box>
       </GridItem>
     </Grid>
   )

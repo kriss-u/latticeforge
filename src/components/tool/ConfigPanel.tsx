@@ -80,7 +80,7 @@ export default function ConfigPanel({
             <Badge colorPalette="gray" variant="subtle">
               {algorithm.codename}
             </Badge>
-            <Badge colorPalette="blue" variant="subtle">
+            <Badge colorPalette="brand" variant="subtle">
               {algorithm.fips}
             </Badge>
           </HStack>
@@ -88,7 +88,7 @@ export default function ConfigPanel({
             {algorithm.description}
           </Text>
         </Box>
-        <Button colorPalette="blue" onClick={onRun} flexShrink="0">
+        <Button colorPalette="brand" onClick={onRun} flexShrink="0">
           <LuPlay />
           Run
         </Button>
