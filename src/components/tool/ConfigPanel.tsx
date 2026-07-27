@@ -27,6 +27,7 @@ interface ConfigPanelProps {
   payload: OperationPayload
   onPayloadChange: (key: string, value: string) => void
   onRun: () => void
+  isRunning: boolean
 }
 
 export default function ConfigPanel({
@@ -38,6 +39,7 @@ export default function ConfigPanel({
   payload,
   onPayloadChange,
   onRun,
+  isRunning,
 }: ConfigPanelProps) {
   const fields =
     algorithmRegistry[algorithm.id]?.operations.find(
@@ -88,7 +90,12 @@ export default function ConfigPanel({
             {algorithm.description}
           </Text>
         </Box>
-        <Button colorPalette="brand" onClick={onRun} flexShrink="0">
+        <Button
+          colorPalette="brand"
+          onClick={onRun}
+          flexShrink="0"
+          disabled={isRunning}
+        >
           <LuPlay />
           Run
         </Button>

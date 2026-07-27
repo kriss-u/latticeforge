@@ -4,6 +4,7 @@ import {
   Center,
   HStack,
   IconButton,
+  Spinner,
   Stack,
   Text,
   Textarea,
@@ -17,6 +18,7 @@ interface OutputPanelProps {
   variantId: string
   result: OperationResult | null
   error: string | null
+  isRunning: boolean
 }
 
 /** File extensions that reflect what the byte field actually holds. */
@@ -34,43 +36,64 @@ export default function OutputPanel({
   variantId,
   result,
   error,
+  isRunning,
 }: OutputPanelProps) {
   const hasOutput = Boolean(error || result?.summary || result?.fields?.length)
 
   return (
-    <Stack gap="4" p="4" h="full" overflowY="auto">
-      <HStack justify="space-between">
-        <Text fontSize="xs" fontWeight="medium" color="fg.muted">
-          Output
-        </Text>
-      </HStack>
-
-      {!hasOutput && (
-        <Box position="relative" flex="1" minH="40">
-          <Center position="absolute" inset="0" px="4">
-            <Text fontSize="sm" color="fg.muted" textAlign="center">
-              Configure the algorithm and press Run to see output here.
+    <Box position="relative" h="full">
+      {isRunning && (
+        <Center
+          position="absolute"
+          inset="0"
+          zIndex="1"
+          bg={{ base: "whiteAlpha.700", _dark: "blackAlpha.700" }}
+          backdropFilter="blur(4px)"
+          rounded="inherit"
+        >
+          <Stack align="center" gap="3">
+            <Spinner size="lg" color="brand.solid" borderWidth="3px" />
+            <Text fontSize="sm" color="fg.muted">
+              Running…
             </Text>
-          </Center>
-        </Box>
+          </Stack>
+        </Center>
       )}
 
-      {error && <OutputField label="Error" value={error} color="fg.error" />}
+      <Stack gap="4" p="4" h="full" overflowY="auto">
+        <HStack justify="space-between">
+          <Text fontSize="xs" fontWeight="medium" color="fg.muted">
+            Output
+          </Text>
+        </HStack>
 
-      {result?.summary && <OutputField label="Result" value={result.summary} />}
+        {!hasOutput && (
+          <Box position="relative" flex="1" minH="40">
+            <Center position="absolute" inset="0" px="4">
+              <Text fontSize="sm" color="fg.muted" textAlign="center">
+                Configure the algorithm and press Run to see output here.
+              </Text>
+            </Center>
+          </Box>
+        )}
 
-      {result?.fields?.map((field) => (
-        <OutputField
-          key={field.key}
-          label={field.label}
-          value={field.value}
-          binary={field.binary}
-          fileName={`${algorithmId}-${variantId}-${field.key}.${
-            FIELD_EXTENSIONS[field.key] ?? "bin"
-          }`}
-        />
-      ))}
-    </Stack>
+        {error && <OutputField label="Error" value={error} color="fg.error" />}
+
+        {result?.summary && <OutputField label="Result" value={result.summary} />}
+
+        {result?.fields?.map((field) => (
+          <OutputField
+            key={field.key}
+            label={field.label}
+            value={field.value}
+            binary={field.binary}
+            fileName={`${algorithmId}-${variantId}-${field.key}.${
+              FIELD_EXTENSIONS[field.key] ?? "bin"
+            }`}
+          />
+        ))}
+      </Stack>
+    </Box>
   )
 }
 

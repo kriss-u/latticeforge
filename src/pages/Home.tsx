@@ -7,6 +7,9 @@ import { algorithms } from "@/data/algorithms"
 import { algorithmRegistry } from "@/lib/registry"
 import type { Algorithm, OperationPayload, OperationResult } from "@/types/algorithm"
 
+/** Minimum visible duration for the Run loading state, so fast ops still register as feedback. */
+const MIN_RUN_DURATION_MS = 400
+
 const glassPanel: BoxProps = {
   bg: { base: "whiteAlpha.600", _dark: "whiteAlpha.50" },
   backdropFilter: "blur(24px) saturate(160%)",
@@ -27,6 +30,7 @@ export default function Home() {
   const [payload, setPayload] = useState<OperationPayload>({})
   const [result, setResult] = useState<OperationResult | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [isRunning, setIsRunning] = useState(false)
 
   const handleSelectAlgorithm = (next: Algorithm) => {
     setAlgorithm(next)
@@ -47,23 +51,38 @@ export default function Home() {
   }
 
   const handleRun = () => {
-    const operationDef = algorithmRegistry[algorithm.id]?.operations.find(
-      (op) => op.name === operation,
-    )
+    setIsRunning(true)
+    const startedAt = performance.now()
 
-    if (!operationDef) {
-      setResult(null)
-      setError(`Output not yet implemented for ${operation}.`)
-      return
-    }
+    // Let the loading overlay paint before running the (synchronous) crypto op.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const operationDef = algorithmRegistry[algorithm.id]?.operations.find(
+          (op) => op.name === operation,
+        )
 
-    try {
-      setResult(operationDef.run(variantId, payload))
-      setError(null)
-    } catch (err) {
-      setResult(null)
-      setError(err instanceof Error ? err.message : String(err))
-    }
+        let nextResult: OperationResult | null = null
+        let nextError: string | null = null
+
+        if (!operationDef) {
+          nextError = `Output not yet implemented for ${operation}.`
+        } else {
+          try {
+            nextResult = operationDef.run(variantId, payload)
+          } catch (err) {
+            nextError = err instanceof Error ? err.message : String(err)
+          }
+        }
+
+        const elapsed = performance.now() - startedAt
+        const remaining = Math.max(0, MIN_RUN_DURATION_MS - elapsed)
+        window.setTimeout(() => {
+          setResult(nextResult)
+          setError(nextError)
+          setIsRunning(false)
+        }, remaining)
+      })
+    })
   }
 
   return (
@@ -99,6 +118,7 @@ export default function Home() {
             payload={payload}
             onPayloadChange={handlePayloadChange}
             onRun={handleRun}
+            isRunning={isRunning}
           />
         </Box>
       </GridItem>
@@ -110,6 +130,7 @@ export default function Home() {
             variantId={variantId}
             result={result}
             error={error}
+            isRunning={isRunning}
           />
         </Box>
       </GridItem>
