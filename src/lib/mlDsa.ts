@@ -1,5 +1,6 @@
 import { ml_dsa44, ml_dsa65, ml_dsa87 } from "@noble/post-quantum/ml-dsa.js"
 import { bytesToHex, hexToBytes, utf8ToBytes } from "@noble/hashes/utils.js"
+import type { AlgorithmDefinition, OperationPayload } from "@/types/algorithm"
 
 const variants = {
   "ml-dsa-44": ml_dsa44,
@@ -15,7 +16,7 @@ function getVariant(variantId: string) {
   return dsa
 }
 
-export function mlDsaKeygen(variantId: string): string {
+function keygen(variantId: string): string {
   const dsa = getVariant(variantId)
   const { publicKey, secretKey } = dsa.keygen()
   return JSON.stringify(
@@ -28,45 +29,75 @@ export function mlDsaKeygen(variantId: string): string {
   )
 }
 
-export function mlDsaSign(variantId: string, input: string): string {
+function sign(variantId: string, payload: OperationPayload): string {
   const dsa = getVariant(variantId)
-  const { secretKey, message } = JSON.parse(input) as {
-    secretKey: string
-    message: string
-  }
-  const signature = dsa.sign(utf8ToBytes(message), hexToBytes(secretKey))
+  const signature = dsa.sign(
+    utf8ToBytes(payload.message ?? ""),
+    hexToBytes(payload.secretKey ?? ""),
+  )
   return JSON.stringify({ signature: bytesToHex(signature) }, null, 2)
 }
 
-export function mlDsaVerify(variantId: string, input: string): string {
+function verify(variantId: string, payload: OperationPayload): string {
   const dsa = getVariant(variantId)
-  const { publicKey, message, signature } = JSON.parse(input) as {
-    publicKey: string
-    message: string
-    signature: string
-  }
   const valid = dsa.verify(
-    hexToBytes(signature),
-    utf8ToBytes(message),
-    hexToBytes(publicKey),
+    hexToBytes(payload.signature ?? ""),
+    utf8ToBytes(payload.message ?? ""),
+    hexToBytes(payload.publicKey ?? ""),
   )
-  return valid ? "VALID\n\nSignature matches the message and public key." : "INVALID\n\nSignature does not match the message and public key."
+  return valid
+    ? "VALID\n\nSignature matches the message and public key."
+    : "INVALID\n\nSignature does not match the message and public key."
 }
 
-export const mlDsaPlaceholders: Record<string, string> = {
-  Keygen: "Keygen ignores input. Press Run to generate a fresh keypair.",
-  Sign: JSON.stringify(
-    { secretKey: "<hex secretKey from Keygen>", message: "hello world" },
-    null,
-    2,
-  ),
-  Verify: JSON.stringify(
+export const mlDsaDefinition: AlgorithmDefinition = {
+  operations: [
     {
-      publicKey: "<hex publicKey from Keygen>",
-      message: "hello world",
-      signature: "<hex signature from Sign>",
+      name: "Keygen",
+      fields: [],
+      run: (variantId) => keygen(variantId),
     },
-    null,
-    2,
-  ),
+    {
+      name: "Sign",
+      fields: [
+        {
+          key: "secretKey",
+          label: "Secret key (hex)",
+          type: "textarea",
+          placeholder: "<hex secretKey from Keygen>",
+        },
+        {
+          key: "message",
+          label: "Message",
+          type: "textarea",
+          placeholder: "hello world",
+        },
+      ],
+      run: (variantId, payload) => sign(variantId, payload),
+    },
+    {
+      name: "Verify",
+      fields: [
+        {
+          key: "publicKey",
+          label: "Public key (hex)",
+          type: "textarea",
+          placeholder: "<hex publicKey from Keygen>",
+        },
+        {
+          key: "message",
+          label: "Message",
+          type: "textarea",
+          placeholder: "hello world",
+        },
+        {
+          key: "signature",
+          label: "Signature (hex)",
+          type: "textarea",
+          placeholder: "<hex signature from Sign>",
+        },
+      ],
+      run: (variantId, payload) => verify(variantId, payload),
+    },
+  ],
 }

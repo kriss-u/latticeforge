@@ -4,14 +4,15 @@ import {
   Button,
   Heading,
   HStack,
+  Input,
   NativeSelect,
   Stack,
   Text,
   Textarea,
 } from "@chakra-ui/react"
 import { LuPlay } from "react-icons/lu"
-import { mlDsaPlaceholders } from "@/lib/mlDsa"
-import type { Algorithm } from "@/types/algorithm"
+import { algorithmRegistry } from "@/lib/registry"
+import type { Algorithm, OperationPayload } from "@/types/algorithm"
 
 interface ConfigPanelProps {
   algorithm: Algorithm
@@ -19,8 +20,8 @@ interface ConfigPanelProps {
   onVariantChange: (id: string) => void
   operation: string
   onOperationChange: (operation: string) => void
-  input: string
-  onInputChange: (value: string) => void
+  payload: OperationPayload
+  onPayloadChange: (key: string, value: string) => void
   onRun: () => void
 }
 
@@ -30,14 +31,14 @@ export default function ConfigPanel({
   onVariantChange,
   operation,
   onOperationChange,
-  input,
-  onInputChange,
+  payload,
+  onPayloadChange,
   onRun,
 }: ConfigPanelProps) {
-  const placeholder =
-    algorithm.id === "ml-dsa"
-      ? mlDsaPlaceholders[operation]
-      : "Paste or type input data here..."
+  const fields =
+    algorithmRegistry[algorithm.id]?.operations.find(
+      (op) => op.name === operation,
+    )?.fields ?? []
 
   return (
     <Stack gap="4" p="4" h="full">
@@ -96,21 +97,40 @@ export default function ConfigPanel({
         </Box>
       </HStack>
 
-      <Stack gap="2" flex="1" minH="0">
-        <Text fontSize="xs" fontWeight="medium" color="fg.muted">
-          Input
+      {fields.length === 0 ? (
+        <Text fontSize="sm" color="fg.muted">
+          This operation takes no input. Press Run to execute.
         </Text>
-        <Textarea
-          value={input}
-          onChange={(e) => onInputChange(e.target.value)}
-          placeholder={placeholder}
-          fontFamily="mono"
-          fontSize="sm"
-          flex="1"
-          minH="40"
-          resize="none"
-        />
-      </Stack>
+      ) : (
+        <Stack gap="3" flex="1" minH="0" overflowY="auto">
+          {fields.map((field) => (
+            <Stack key={field.key} gap="1">
+              <Text fontSize="xs" fontWeight="medium" color="fg.muted">
+                {field.label}
+              </Text>
+              {field.type === "textarea" ? (
+                <Textarea
+                  value={payload[field.key] ?? ""}
+                  onChange={(e) => onPayloadChange(field.key, e.target.value)}
+                  placeholder={field.placeholder}
+                  fontFamily="mono"
+                  fontSize="sm"
+                  minH="24"
+                  resize="none"
+                />
+              ) : (
+                <Input
+                  value={payload[field.key] ?? ""}
+                  onChange={(e) => onPayloadChange(field.key, e.target.value)}
+                  placeholder={field.placeholder}
+                  fontFamily="mono"
+                  fontSize="sm"
+                />
+              )}
+            </Stack>
+          ))}
+        </Stack>
+      )}
 
       <HStack justify="flex-end">
         <Button colorPalette="blue" onClick={onRun}>

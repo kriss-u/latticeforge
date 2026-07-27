@@ -4,43 +4,51 @@ import AlgorithmSidebar from "@/components/tool/AlgorithmSidebar"
 import ConfigPanel from "@/components/tool/ConfigPanel"
 import OutputPanel from "@/components/tool/OutputPanel"
 import { algorithms } from "@/data/algorithms"
-import { mlDsaKeygen, mlDsaSign, mlDsaVerify } from "@/lib/mlDsa"
-import type { Algorithm } from "@/types/algorithm"
+import { algorithmRegistry } from "@/lib/registry"
+import type { Algorithm, OperationPayload } from "@/types/algorithm"
 
 export default function Home() {
   const [algorithm, setAlgorithm] = useState<Algorithm>(algorithms[0])
   const [variantId, setVariantId] = useState(algorithms[0].variants[0].id)
   const [operation, setOperation] = useState(algorithms[0].operations[0])
-  const [input, setInput] = useState("")
+  const [payload, setPayload] = useState<OperationPayload>({})
   const [output, setOutput] = useState("")
 
   const handleSelectAlgorithm = (next: Algorithm) => {
     setAlgorithm(next)
     setVariantId(next.variants[0].id)
     setOperation(next.operations[0])
+    setPayload({})
     setOutput("")
   }
 
+  const handleOperationChange = (next: string) => {
+    setOperation(next)
+    setPayload({})
+  }
+
+  const handlePayloadChange = (key: string, value: string) => {
+    setPayload((prev) => ({ ...prev, [key]: value }))
+  }
+
   const handleRun = () => {
-    if (algorithm.id === "ml-dsa") {
-      try {
-        if (operation === "Keygen") {
-          setOutput(mlDsaKeygen(variantId))
-        } else if (operation === "Sign") {
-          setOutput(mlDsaSign(variantId, input))
-        } else if (operation === "Verify") {
-          setOutput(mlDsaVerify(variantId, input))
-        }
-      } catch (err) {
-        setOutput(`Error: ${err instanceof Error ? err.message : String(err)}`)
-      }
+    const operationDef = algorithmRegistry[algorithm.id]?.operations.find(
+      (op) => op.name === operation,
+    )
+
+    if (!operationDef) {
+      const variant = algorithm.variants.find((v) => v.id === variantId)
+      setOutput(
+        `[${variant?.label} - ${operation}]\n\nOutput not yet implemented.`,
+      )
       return
     }
 
-    const variant = algorithm.variants.find((v) => v.id === variantId)
-    setOutput(
-      `[${variant?.label} - ${operation}]\n\nOutput not yet implemented.\n\nInput received (${input.length} bytes):\n${input}`,
-    )
+    try {
+      setOutput(operationDef.run(variantId, payload))
+    } catch (err) {
+      setOutput(`Error: ${err instanceof Error ? err.message : String(err)}`)
+    }
   }
 
   return (
@@ -72,9 +80,9 @@ export default function Home() {
           variantId={variantId}
           onVariantChange={setVariantId}
           operation={operation}
-          onOperationChange={setOperation}
-          input={input}
-          onInputChange={setInput}
+          onOperationChange={handleOperationChange}
+          payload={payload}
+          onPayloadChange={handlePayloadChange}
           onRun={handleRun}
         />
       </GridItem>
