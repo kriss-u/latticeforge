@@ -1,18 +1,22 @@
+import { useRef } from "react"
 import {
   Badge,
   Box,
   Button,
+  Checkbox,
   Heading,
   HStack,
+  IconButton,
   Input,
   NativeSelect,
   Stack,
   Text,
   Textarea,
 } from "@chakra-ui/react"
-import { LuPlay } from "react-icons/lu"
+import { LuPlay, LuUpload } from "react-icons/lu"
+import { bytesToHex } from "@noble/hashes/utils.js"
 import { algorithmRegistry } from "@/lib/registry"
-import type { Algorithm, OperationPayload } from "@/types/algorithm"
+import type { Algorithm, FieldDef, OperationPayload } from "@/types/algorithm"
 
 interface ConfigPanelProps {
   algorithm: Algorithm
@@ -40,8 +44,35 @@ export default function ConfigPanel({
       (op) => op.name === operation,
     )?.fields ?? []
 
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const uploadTargetKey = useRef<string | null>(null)
+
+  const requestUpload = (key: string) => {
+    uploadTargetKey.current = key
+    fileInputRef.current?.click()
+  }
+
+  const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    const key = uploadTargetKey.current
+    e.target.value = ""
+    if (!file || !key) return
+    const bytes = new Uint8Array(await file.arrayBuffer())
+    onPayloadChange(key, bytesToHex(bytes))
+    if (fields.some((f) => f.key === `${key}Hex`)) {
+      onPayloadChange(`${key}Hex`, "true")
+    }
+  }
+
   return (
     <Stack gap="4" p="4" h="full">
+      <input
+        ref={fileInputRef}
+        type="file"
+        hidden
+        onChange={handleFileSelected}
+      />
+
       <Box>
         <HStack gap="2" mb="1">
           <Heading size="md">{algorithm.name}</Heading>
@@ -104,30 +135,13 @@ export default function ConfigPanel({
       ) : (
         <Stack gap="3" flex="1" minH="0" overflowY="auto">
           {fields.map((field) => (
-            <Stack key={field.key} gap="1">
-              <Text fontSize="xs" fontWeight="medium" color="fg.muted">
-                {field.label}
-              </Text>
-              {field.type === "textarea" ? (
-                <Textarea
-                  value={payload[field.key] ?? ""}
-                  onChange={(e) => onPayloadChange(field.key, e.target.value)}
-                  placeholder={field.placeholder}
-                  fontFamily="mono"
-                  fontSize="sm"
-                  minH="24"
-                  resize="none"
-                />
-              ) : (
-                <Input
-                  value={payload[field.key] ?? ""}
-                  onChange={(e) => onPayloadChange(field.key, e.target.value)}
-                  placeholder={field.placeholder}
-                  fontFamily="mono"
-                  fontSize="sm"
-                />
-              )}
-            </Stack>
+            <FieldInput
+              key={field.key}
+              field={field}
+              value={payload[field.key] ?? ""}
+              onChange={(value) => onPayloadChange(field.key, value)}
+              onUpload={() => requestUpload(field.key)}
+            />
           ))}
         </Stack>
       )}
@@ -138,6 +152,68 @@ export default function ConfigPanel({
           Run
         </Button>
       </HStack>
+    </Stack>
+  )
+}
+
+interface FieldInputProps {
+  field: FieldDef
+  value: string
+  onChange: (value: string) => void
+  onUpload: () => void
+}
+
+function FieldInput({ field, value, onChange, onUpload }: FieldInputProps) {
+  if (field.type === "checkbox") {
+    return (
+      <Checkbox.Root
+        checked={value === "true"}
+        onCheckedChange={(d) => onChange(d.checked ? "true" : "false")}
+      >
+        <Checkbox.HiddenInput />
+        <Checkbox.Control />
+        <Checkbox.Label fontSize="sm">{field.label}</Checkbox.Label>
+      </Checkbox.Root>
+    )
+  }
+
+  return (
+    <Stack gap="1">
+      <HStack justify="space-between">
+        <Text fontSize="xs" fontWeight="medium" color="fg.muted">
+          {field.label}
+          {field.optional ? " (optional)" : ""}
+        </Text>
+        {field.binary && (
+          <IconButton
+            aria-label={`Upload file for ${field.label}`}
+            size="2xs"
+            variant="ghost"
+            onClick={onUpload}
+          >
+            <LuUpload />
+          </IconButton>
+        )}
+      </HStack>
+      {field.type === "textarea" ? (
+        <Textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={field.placeholder}
+          fontFamily="mono"
+          fontSize="sm"
+          minH="24"
+          resize="none"
+        />
+      ) : (
+        <Input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={field.placeholder}
+          fontFamily="mono"
+          fontSize="sm"
+        />
+      )}
     </Stack>
   )
 }

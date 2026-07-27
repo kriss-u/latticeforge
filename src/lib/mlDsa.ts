@@ -1,6 +1,6 @@
 import { ml_dsa44, ml_dsa65, ml_dsa87 } from "@noble/post-quantum/ml-dsa.js"
 import { bytesToHex, hexToBytes, utf8ToBytes } from "@noble/hashes/utils.js"
-import type { AlgorithmDefinition, OperationPayload } from "@/types/algorithm"
+import type { AlgorithmDefinition, OperationPayload, OperationResult } from "@/types/algorithm"
 
 const variants = {
   "ml-dsa-44": ml_dsa44,
@@ -16,46 +16,64 @@ function getVariant(variantId: string) {
   return dsa
 }
 
-function keygen(variantId: string): string {
-  const dsa = getVariant(variantId)
-  const { publicKey, secretKey } = dsa.keygen()
-  return JSON.stringify(
-    {
-      publicKey: bytesToHex(publicKey),
-      secretKey: bytesToHex(secretKey),
-    },
-    null,
-    2,
-  )
+function messageBytes(payload: OperationPayload): Uint8Array {
+  const message = payload.message ?? ""
+  return payload.messageHex === "true" ? hexToBytes(message) : utf8ToBytes(message)
 }
 
-function sign(variantId: string, payload: OperationPayload): string {
+function keygen(variantId: string, payload: OperationPayload): OperationResult {
   const dsa = getVariant(variantId)
-  const signature = dsa.sign(
-    utf8ToBytes(payload.message ?? ""),
-    hexToBytes(payload.secretKey ?? ""),
-  )
-  return JSON.stringify({ signature: bytesToHex(signature) }, null, 2)
+  const seed = payload.seed ? hexToBytes(payload.seed) : undefined
+  const { publicKey, secretKey } = dsa.keygen(seed)
+  return {
+    fields: [
+      { key: "publicKey", label: "Public key", value: bytesToHex(publicKey), binary: true },
+      { key: "secretKey", label: "Secret key", value: bytesToHex(secretKey), binary: true },
+    ],
+  }
 }
 
-function verify(variantId: string, payload: OperationPayload): string {
+function sign(variantId: string, payload: OperationPayload): OperationResult {
+  const dsa = getVariant(variantId)
+  const signature = dsa.sign(messageBytes(payload), hexToBytes(payload.secretKey ?? ""), {
+    context: payload.context ? hexToBytes(payload.context) : undefined,
+    extraEntropy: payload.deterministic === "true" ? false : undefined,
+  })
+  return {
+    fields: [{ key: "signature", label: "Signature", value: bytesToHex(signature), binary: true }],
+  }
+}
+
+function verify(variantId: string, payload: OperationPayload): OperationResult {
   const dsa = getVariant(variantId)
   const valid = dsa.verify(
     hexToBytes(payload.signature ?? ""),
-    utf8ToBytes(payload.message ?? ""),
+    messageBytes(payload),
     hexToBytes(payload.publicKey ?? ""),
+    { context: payload.context ? hexToBytes(payload.context) : undefined },
   )
-  return valid
-    ? "VALID\n\nSignature matches the message and public key."
-    : "INVALID\n\nSignature does not match the message and public key."
+  return {
+    summary: valid
+      ? "VALID\n\nSignature matches the message and public key."
+      : "INVALID\n\nSignature does not match the message and public key.",
+  }
 }
 
 export const mlDsaDefinition: AlgorithmDefinition = {
   operations: [
     {
       name: "Keygen",
-      fields: [],
-      run: (variantId) => keygen(variantId),
+      fields: [
+        {
+          key: "seed",
+          label: "Seed",
+          type: "textarea",
+          placeholder: "<optional hex seed for deterministic keygen>",
+          optional: true,
+          binary: true,
+        },
+      ],
+      run: (variantId, payload) => keygen(variantId, payload),
     },
     {
       name: "Sign",
@@ -65,12 +83,34 @@ export const mlDsaDefinition: AlgorithmDefinition = {
           label: "Secret key (hex)",
           type: "textarea",
           placeholder: "<hex secretKey from Keygen>",
+          binary: true,
         },
         {
           key: "message",
           label: "Message",
           type: "textarea",
           placeholder: "hello world",
+          binary: true,
+        },
+        {
+          key: "messageHex",
+          label: "Message is hex-encoded bytes",
+          type: "checkbox",
+          optional: true,
+        },
+        {
+          key: "context",
+          label: "Context",
+          type: "textarea",
+          placeholder: "<optional hex context string, max 255 bytes>",
+          optional: true,
+          binary: true,
+        },
+        {
+          key: "deterministic",
+          label: "Deterministic signing (disable extra entropy)",
+          type: "checkbox",
+          optional: true,
         },
       ],
       run: (variantId, payload) => sign(variantId, payload),
@@ -83,18 +123,35 @@ export const mlDsaDefinition: AlgorithmDefinition = {
           label: "Public key (hex)",
           type: "textarea",
           placeholder: "<hex publicKey from Keygen>",
+          binary: true,
         },
         {
           key: "message",
           label: "Message",
           type: "textarea",
           placeholder: "hello world",
+          binary: true,
+        },
+        {
+          key: "messageHex",
+          label: "Message is hex-encoded bytes",
+          type: "checkbox",
+          optional: true,
         },
         {
           key: "signature",
           label: "Signature (hex)",
           type: "textarea",
           placeholder: "<hex signature from Sign>",
+          binary: true,
+        },
+        {
+          key: "context",
+          label: "Context",
+          type: "textarea",
+          placeholder: "<optional hex context string, max 255 bytes>",
+          optional: true,
+          binary: true,
         },
       ],
       run: (variantId, payload) => verify(variantId, payload),

@@ -5,21 +5,23 @@ import ConfigPanel from "@/components/tool/ConfigPanel"
 import OutputPanel from "@/components/tool/OutputPanel"
 import { algorithms } from "@/data/algorithms"
 import { algorithmRegistry } from "@/lib/registry"
-import type { Algorithm, OperationPayload } from "@/types/algorithm"
+import type { Algorithm, OperationPayload, OperationResult } from "@/types/algorithm"
 
 export default function Home() {
   const [algorithm, setAlgorithm] = useState<Algorithm>(algorithms[0])
   const [variantId, setVariantId] = useState(algorithms[0].variants[0].id)
   const [operation, setOperation] = useState(algorithms[0].operations[0])
   const [payload, setPayload] = useState<OperationPayload>({})
-  const [output, setOutput] = useState("")
+  const [result, setResult] = useState<OperationResult | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSelectAlgorithm = (next: Algorithm) => {
     setAlgorithm(next)
     setVariantId(next.variants[0].id)
     setOperation(next.operations[0])
     setPayload({})
-    setOutput("")
+    setResult(null)
+    setError(null)
   }
 
   const handleOperationChange = (next: string) => {
@@ -37,17 +39,17 @@ export default function Home() {
     )
 
     if (!operationDef) {
-      const variant = algorithm.variants.find((v) => v.id === variantId)
-      setOutput(
-        `[${variant?.label} - ${operation}]\n\nOutput not yet implemented.`,
-      )
+      setResult(null)
+      setError(`Output not yet implemented for ${operation}.`)
       return
     }
 
     try {
-      setOutput(operationDef.run(variantId, payload))
+      setResult(operationDef.run(variantId, payload))
+      setError(null)
     } catch (err) {
-      setOutput(`Error: ${err instanceof Error ? err.message : String(err)}`)
+      setResult(null)
+      setError(err instanceof Error ? err.message : String(err))
     }
   }
 
@@ -88,7 +90,12 @@ export default function Home() {
       </GridItem>
 
       <GridItem area="output" minH="0">
-        <OutputPanel output={output} />
+        <OutputPanel
+          algorithmId={algorithm.id}
+          variantId={variantId}
+          result={result}
+          error={error}
+        />
       </GridItem>
     </Grid>
   )

@@ -1,6 +1,6 @@
 import { ml_kem512, ml_kem768, ml_kem1024 } from "@noble/post-quantum/ml-kem.js"
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils.js"
-import type { AlgorithmDefinition, OperationPayload } from "@/types/algorithm"
+import type { AlgorithmDefinition, OperationPayload, OperationResult } from "@/types/algorithm"
 
 const variants = {
   "ml-kem-512": ml_kem512,
@@ -16,49 +16,61 @@ function getVariant(variantId: string) {
   return kem
 }
 
-function keygen(variantId: string): string {
+function keygen(variantId: string, payload: OperationPayload): OperationResult {
   const kem = getVariant(variantId)
-  const { publicKey, secretKey } = kem.keygen()
-  return JSON.stringify(
-    {
-      publicKey: bytesToHex(publicKey),
-      secretKey: bytesToHex(secretKey),
-    },
-    null,
-    2,
-  )
+  const seed = payload.seed ? hexToBytes(payload.seed) : undefined
+  const { publicKey, secretKey } = kem.keygen(seed)
+  return {
+    fields: [
+      { key: "publicKey", label: "Public key", value: bytesToHex(publicKey), binary: true },
+      { key: "secretKey", label: "Secret key", value: bytesToHex(secretKey), binary: true },
+    ],
+  }
 }
 
-function encapsulate(variantId: string, payload: OperationPayload): string {
+function encapsulate(variantId: string, payload: OperationPayload): OperationResult {
   const kem = getVariant(variantId)
+  const randomness = payload.randomness ? hexToBytes(payload.randomness) : undefined
   const { cipherText, sharedSecret } = kem.encapsulate(
     hexToBytes(payload.publicKey ?? ""),
+    randomness,
   )
-  return JSON.stringify(
-    {
-      cipherText: bytesToHex(cipherText),
-      sharedSecret: bytesToHex(sharedSecret),
-    },
-    null,
-    2,
-  )
+  return {
+    fields: [
+      { key: "cipherText", label: "Ciphertext", value: bytesToHex(cipherText), binary: true },
+      { key: "sharedSecret", label: "Shared secret", value: bytesToHex(sharedSecret), binary: true },
+    ],
+  }
 }
 
-function decapsulate(variantId: string, payload: OperationPayload): string {
+function decapsulate(variantId: string, payload: OperationPayload): OperationResult {
   const kem = getVariant(variantId)
   const sharedSecret = kem.decapsulate(
     hexToBytes(payload.cipherText ?? ""),
     hexToBytes(payload.secretKey ?? ""),
   )
-  return JSON.stringify({ sharedSecret: bytesToHex(sharedSecret) }, null, 2)
+  return {
+    fields: [
+      { key: "sharedSecret", label: "Shared secret", value: bytesToHex(sharedSecret), binary: true },
+    ],
+  }
 }
 
 export const mlKemDefinition: AlgorithmDefinition = {
   operations: [
     {
       name: "Keygen",
-      fields: [],
-      run: (variantId) => keygen(variantId),
+      fields: [
+        {
+          key: "seed",
+          label: "Seed",
+          type: "textarea",
+          placeholder: "<optional hex seed for deterministic keygen>",
+          optional: true,
+          binary: true,
+        },
+      ],
+      run: (variantId, payload) => keygen(variantId, payload),
     },
     {
       name: "Encapsulate",
@@ -68,6 +80,15 @@ export const mlKemDefinition: AlgorithmDefinition = {
           label: "Public key (hex)",
           type: "textarea",
           placeholder: "<hex publicKey from Keygen>",
+          binary: true,
+        },
+        {
+          key: "randomness",
+          label: "Randomness",
+          type: "textarea",
+          placeholder: "<optional 32-byte hex randomness for deterministic encapsulation>",
+          optional: true,
+          binary: true,
         },
       ],
       run: (variantId, payload) => encapsulate(variantId, payload),
@@ -80,12 +101,14 @@ export const mlKemDefinition: AlgorithmDefinition = {
           label: "Secret key (hex)",
           type: "textarea",
           placeholder: "<hex secretKey from Keygen>",
+          binary: true,
         },
         {
           key: "cipherText",
           label: "Ciphertext (hex)",
           type: "textarea",
           placeholder: "<hex cipherText from Encapsulate>",
+          binary: true,
         },
       ],
       run: (variantId, payload) => decapsulate(variantId, payload),
