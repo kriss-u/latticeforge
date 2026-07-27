@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { Box, Input, Stack, Text } from "@chakra-ui/react"
+import { Badge, Box, HStack, Input, Stack, Text } from "@chakra-ui/react"
 import { LuSearch } from "react-icons/lu"
 import { algorithmCategories, algorithms } from "@/data/algorithms"
 import type { Algorithm } from "@/types/algorithm"
@@ -92,9 +92,16 @@ export default function AlgorithmSidebar({
                       _hover={{ bg: selected ? "colorPalette.subtle" : "bg.muted" }}
                       transition="background 0.15s"
                     >
-                      <Text fontWeight="medium" fontSize="sm">
-                        {algorithm.name}
-                      </Text>
+                      <HStack gap="1.5">
+                        <Text fontWeight="medium" fontSize="sm">
+                          {algorithm.name}
+                        </Text>
+                        {algorithm.status && (
+                          <Badge size="xs" colorPalette="orange" variant="subtle">
+                            {algorithm.status.label}
+                          </Badge>
+                        )}
+                      </HStack>
                       <Text fontSize="xs" color="fg.muted">
                         {algorithm.codename}
                       </Text>

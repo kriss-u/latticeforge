@@ -60,10 +60,41 @@ export const algorithms: Algorithm[] = [
     ],
     operations: ["Keygen", "Sign", "Verify"],
   },
+  {
+    id: "hqc",
+    name: "HQC",
+    codename: "HQC",
+    fips: "Draft (unassigned)",
+    category: "KEM",
+    description:
+      "Code-based key encapsulation mechanism selected by NIST in March 2025 as a backup to ML-KEM.",
+    variants: [],
+    operations: [],
+    status: {
+      label: "Draft standard",
+      note: "NIST selected HQC in March 2025 as the backup KEM in case a future weakness is found in lattice-based ML-KEM. Its FIPS standard is still in draft (expected around 2027), and no independently audited JavaScript/WASM implementation exists yet. LatticeForge will add it once one does.",
+    },
+  },
+  {
+    id: "lms-xmss",
+    name: "LMS / XMSS",
+    codename: "Stateful hash-based signatures",
+    fips: "SP 800-208",
+    category: "Stateful Hash-Based Signature",
+    description:
+      "Stateful hash-based signature schemes approved by NIST for specialized use cases such as firmware signing.",
+    variants: [],
+    operations: [],
+    status: {
+      label: "Not yet available",
+      note: "LMS (RFC 8554) and XMSS (RFC 8391) were approved by NIST via SP 800-208, predating the main PQC competition. Unlike SLH-DSA, they are stateful — reusing a one-time key destroys security — which makes them risky to expose through a simple input/output tool without dedicated key-state management. No independently audited JS implementation was found either, so LatticeForge doesn't implement them yet.",
+    },
+  },
 ]
 
 export const algorithmCategories: AlgorithmCategory[] = [
   "KEM",
   "Signature",
   "Hash-based Signature",
+  "Stateful Hash-Based Signature",
 ]

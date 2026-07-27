@@ -34,8 +34,8 @@ export default function Home() {
 
   const handleSelectAlgorithm = (next: Algorithm) => {
     setAlgorithm(next)
-    setVariantId(next.variants[0].id)
-    setOperation(next.operations[0])
+    setVariantId(next.variants[0]?.id ?? "")
+    setOperation(next.operations[0] ?? "")
     setPayload({})
     setResult(null)
     setError(null)

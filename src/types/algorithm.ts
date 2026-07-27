@@ -1,8 +1,19 @@
-export type AlgorithmCategory = "KEM" | "Signature" | "Hash-based Signature"
+export type AlgorithmCategory =
+  | "KEM"
+  | "Signature"
+  | "Hash-based Signature"
+  | "Stateful Hash-Based Signature"
 
 export interface AlgorithmVariant {
   id: string
   label: string
+}
+
+export interface AlgorithmStatus {
+  /** Short tag shown as a badge, e.g. "Draft standard", "Not yet available". */
+  label: string
+  /** Longer explanation shown in the config panel. */
+  note: string
 }
 
 export interface Algorithm {
@@ -14,6 +25,8 @@ export interface Algorithm {
   description: string
   variants: AlgorithmVariant[]
   operations: string[]
+  /** Present when the algorithm is listed but not runnable yet (e.g. no audited implementation). */
+  status?: AlgorithmStatus
 }
 
 export interface FieldDef {

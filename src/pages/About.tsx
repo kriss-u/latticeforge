@@ -6,7 +6,7 @@ export default function About() {
       <Stack gap="6">
         <Stack gap="2">
           <Heading size="2xl" letterSpacing="tight">
-            About Latticeforge
+            About LatticeForge
           </Heading>
           <Text color="fg.muted">
             A focused toolkit for post-quantum cryptography.
@@ -14,7 +14,7 @@ export default function About() {
         </Stack>
 
         <Text color="fg.default">
-          Latticeforge runs NIST-standardized post-quantum algorithms —
+          LatticeForge runs NIST-standardized post-quantum algorithms —
           ML-KEM, ML-DSA, FN-DSA, and SLH-DSA — entirely in your browser. There's
           no server round-trip and no chaining of unrelated operations: pick an
           algorithm, configure it, and run it against your input.
@@ -24,7 +24,7 @@ export default function About() {
           <Heading size="md">Why it exists</Heading>
           <Text color="fg.default">
             Post-quantum primitives are becoming standard, but tooling to
-            experiment with them is scattered. Latticeforge gives developers
+            experiment with them is scattered. LatticeForge gives developers
             and researchers a single place to generate keys, encapsulate and
             decapsulate, sign and verify, without installing anything.
           </Text>

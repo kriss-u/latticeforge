@@ -1,5 +1,6 @@
 import { useRef } from "react"
 import {
+  Alert,
   Badge,
   Box,
   Button,
@@ -85,78 +86,99 @@ export default function ConfigPanel({
             <Badge colorPalette="brand" variant="subtle">
               {algorithm.fips}
             </Badge>
+            {algorithm.status && (
+              <Badge colorPalette="orange" variant="subtle">
+                {algorithm.status.label}
+              </Badge>
+            )}
           </HStack>
           <Text fontSize="sm" color="fg.muted">
             {algorithm.description}
           </Text>
         </Box>
-        <Button
-          colorPalette="brand"
-          onClick={onRun}
-          flexShrink="0"
-          disabled={isRunning}
-        >
-          <LuPlay />
-          Run
-        </Button>
+        {!algorithm.status && (
+          <Button
+            colorPalette="brand"
+            onClick={onRun}
+            flexShrink="0"
+            disabled={isRunning}
+          >
+            <LuPlay />
+            Run
+          </Button>
+        )}
       </HStack>
 
-      <HStack gap="4" flexWrap="wrap">
-        <Box minW="40">
-          <Text fontSize="xs" fontWeight="medium" color="fg.muted" mb="1">
-            Parameter set
-          </Text>
-          <NativeSelect.Root size="sm">
-            <NativeSelect.Field
-              value={variantId}
-              onChange={(e) => onVariantChange(e.target.value)}
-            >
-              {algorithm.variants.map((variant) => (
-                <option key={variant.id} value={variant.id}>
-                  {variant.label}
-                </option>
-              ))}
-            </NativeSelect.Field>
-            <NativeSelect.Indicator />
-          </NativeSelect.Root>
-        </Box>
+      {algorithm.status && (
+        <Alert.Root status="warning" variant="subtle">
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Title>{algorithm.status.label}</Alert.Title>
+            <Alert.Description>{algorithm.status.note}</Alert.Description>
+          </Alert.Content>
+        </Alert.Root>
+      )}
 
-        <Box minW="40">
-          <Text fontSize="xs" fontWeight="medium" color="fg.muted" mb="1">
-            Operation
-          </Text>
-          <NativeSelect.Root size="sm">
-            <NativeSelect.Field
-              value={operation}
-              onChange={(e) => onOperationChange(e.target.value)}
-            >
-              {algorithm.operations.map((op) => (
-                <option key={op} value={op}>
-                  {op}
-                </option>
-              ))}
-            </NativeSelect.Field>
-            <NativeSelect.Indicator />
-          </NativeSelect.Root>
-        </Box>
-      </HStack>
+      {!algorithm.status && (
+        <>
+          <HStack gap="4" flexWrap="wrap">
+            <Box minW="40">
+              <Text fontSize="xs" fontWeight="medium" color="fg.muted" mb="1">
+                Parameter set
+              </Text>
+              <NativeSelect.Root size="sm">
+                <NativeSelect.Field
+                  value={variantId}
+                  onChange={(e) => onVariantChange(e.target.value)}
+                >
+                  {algorithm.variants.map((variant) => (
+                    <option key={variant.id} value={variant.id}>
+                      {variant.label}
+                    </option>
+                  ))}
+                </NativeSelect.Field>
+                <NativeSelect.Indicator />
+              </NativeSelect.Root>
+            </Box>
 
-      {fields.length === 0 ? (
-        <Text fontSize="sm" color="fg.muted">
-          This operation takes no input. Press Run to execute.
-        </Text>
-      ) : (
-        <Stack gap="3" flex="1" minH="0" overflowY="auto">
-          {fields.map((field) => (
-            <FieldInput
-              key={field.key}
-              field={field}
-              value={payload[field.key] ?? ""}
-              onChange={(value) => onPayloadChange(field.key, value)}
-              onUpload={() => requestUpload(field.key)}
-            />
-          ))}
-        </Stack>
+            <Box minW="40">
+              <Text fontSize="xs" fontWeight="medium" color="fg.muted" mb="1">
+                Operation
+              </Text>
+              <NativeSelect.Root size="sm">
+                <NativeSelect.Field
+                  value={operation}
+                  onChange={(e) => onOperationChange(e.target.value)}
+                >
+                  {algorithm.operations.map((op) => (
+                    <option key={op} value={op}>
+                      {op}
+                    </option>
+                  ))}
+                </NativeSelect.Field>
+                <NativeSelect.Indicator />
+              </NativeSelect.Root>
+            </Box>
+          </HStack>
+
+          {fields.length === 0 ? (
+            <Text fontSize="sm" color="fg.muted">
+              This operation takes no input. Press Run to execute.
+            </Text>
+          ) : (
+            <Stack gap="3" flex="1" minH="0" overflowY="auto">
+              {fields.map((field) => (
+                <FieldInput
+                  key={field.key}
+                  field={field}
+                  value={payload[field.key] ?? ""}
+                  onChange={(value) => onPayloadChange(field.key, value)}
+                  onUpload={() => requestUpload(field.key)}
+                />
+              ))}
+            </Stack>
+          )}
+        </>
       )}
     </Stack>
   )

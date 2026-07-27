@@ -1,8 +1,8 @@
-# Latticeforge
+# LatticeForge
 
 A focused, browser-based toolkit for post-quantum cryptography. Pick a NIST-standardized algorithm, configure it, and run it against your input — all client-side.
 
-Unlike general-purpose crypto toolkits (e.g. CyberChef), Latticeforge is PQC-only and does not support chaining or stacking operations. Each run is a single algorithm with a single configuration, applied to a single input.
+Unlike general-purpose crypto toolkits (e.g. CyberChef), LatticeForge is PQC-only and does not support chaining or stacking operations. Each run is a single algorithm with a single configuration, applied to a single input.
 
 ## Supported algorithms
 

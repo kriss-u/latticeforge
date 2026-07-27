@@ -54,7 +54,7 @@ export default function Layout() {
               <Logo size={24} />
             </Box>
             <Text fontWeight="semibold" fontSize="md" letterSpacing="tight">
-              Latticeforge
+              LatticeForge
             </Text>
           </RouterLink>
         </HStack>
