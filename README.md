@@ -33,6 +33,10 @@ npm run build     # type-check and build for production
 npm run preview   # preview the production build
 ```
 
+## Deployment
+
+Live at [latticeforge.nepcodex.com](https://latticeforge.nepcodex.com).
+
 ## License
 
 BSD-3-Clause
