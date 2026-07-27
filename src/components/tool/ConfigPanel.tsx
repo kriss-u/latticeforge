@@ -10,6 +10,7 @@ import {
   Textarea,
 } from "@chakra-ui/react"
 import { LuPlay } from "react-icons/lu"
+import { mlDsaPlaceholders } from "@/lib/mlDsa"
 import type { Algorithm } from "@/types/algorithm"
 
 interface ConfigPanelProps {
@@ -33,6 +34,11 @@ export default function ConfigPanel({
   onInputChange,
   onRun,
 }: ConfigPanelProps) {
+  const placeholder =
+    algorithm.id === "ml-dsa"
+      ? mlDsaPlaceholders[operation]
+      : "Paste or type input data here..."
+
   return (
     <Stack gap="4" p="4" h="full">
       <Box>
@@ -97,7 +103,7 @@ export default function ConfigPanel({
         <Textarea
           value={input}
           onChange={(e) => onInputChange(e.target.value)}
-          placeholder="Paste or type input data here..."
+          placeholder={placeholder}
           fontFamily="mono"
           fontSize="sm"
           flex="1"

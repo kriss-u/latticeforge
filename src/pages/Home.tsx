@@ -4,6 +4,7 @@ import AlgorithmSidebar from "@/components/tool/AlgorithmSidebar"
 import ConfigPanel from "@/components/tool/ConfigPanel"
 import OutputPanel from "@/components/tool/OutputPanel"
 import { algorithms } from "@/data/algorithms"
+import { mlDsaKeygen, mlDsaSign, mlDsaVerify } from "@/lib/mlDsa"
 import type { Algorithm } from "@/types/algorithm"
 
 export default function Home() {
@@ -21,6 +22,21 @@ export default function Home() {
   }
 
   const handleRun = () => {
+    if (algorithm.id === "ml-dsa") {
+      try {
+        if (operation === "Keygen") {
+          setOutput(mlDsaKeygen(variantId))
+        } else if (operation === "Sign") {
+          setOutput(mlDsaSign(variantId, input))
+        } else if (operation === "Verify") {
+          setOutput(mlDsaVerify(variantId, input))
+        }
+      } catch (err) {
+        setOutput(`Error: ${err instanceof Error ? err.message : String(err)}`)
+      }
+      return
+    }
+
     const variant = algorithm.variants.find((v) => v.id === variantId)
     setOutput(
       `[${variant?.label} - ${operation}]\n\nOutput not yet implemented.\n\nInput received (${input.length} bytes):\n${input}`,
