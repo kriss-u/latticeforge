@@ -41,7 +41,7 @@ export default function OutputPanel({
   const hasOutput = Boolean(error || result?.summary || result?.fields?.length)
 
   return (
-    <Box position="relative" h="full">
+    <Box position="relative" h={{ base: "auto", md: "full" }}>
       {isRunning && (
         <Center
           position="absolute"
@@ -60,7 +60,12 @@ export default function OutputPanel({
         </Center>
       )}
 
-      <Stack gap="4" p="4" h="full" overflowY="auto">
+      <Stack
+        gap="4"
+        p="4"
+        h={{ base: "auto", md: "full" }}
+        overflowY={{ base: "visible", md: "auto" }}
+      >
         <HStack justify="space-between">
           <Text fontSize="xs" fontWeight="medium" color="fg.muted">
             Output

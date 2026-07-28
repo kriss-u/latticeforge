@@ -69,7 +69,13 @@ export default function ConfigPanel({
   }
 
   return (
-    <Stack gap="4" p="4" h="full">
+    <Stack
+      gap="4"
+      p="4"
+      h={{ base: "auto", md: "full" }}
+      minH={{ base: "0", md: "0" }}
+      overflowY={{ base: "visible", md: "auto" }}
+    >
       <input
         ref={fileInputRef}
         type="file"
@@ -77,9 +83,14 @@ export default function ConfigPanel({
         onChange={handleFileSelected}
       />
 
-      <HStack justify="space-between" align="flex-start">
-        <Box>
-          <HStack gap="2" mb="1">
+      <Stack
+        direction={{ base: "column", sm: "row" }}
+        justify="space-between"
+        align={{ base: "stretch", sm: "flex-start" }}
+        gap="3"
+      >
+        <Box minW="0">
+          <HStack gap="2" mb="1" flexWrap="wrap">
             <Heading size="md">{algorithm.name}</Heading>
             <Badge colorPalette="gray" variant="subtle">
               {algorithm.codename}
@@ -96,7 +107,7 @@ export default function ConfigPanel({
           <Text fontSize="sm" color="fg.muted">
             {algorithm.description}
           </Text>
-          <HStack gap="3" mt="1">
+          <HStack gap="3" mt="1" flexWrap="wrap">
             <Link
               href={algorithm.wikiUrl}
               target="_blank"
@@ -122,13 +133,14 @@ export default function ConfigPanel({
             colorPalette="brand"
             onClick={onRun}
             flexShrink="0"
+            w={{ base: "full", sm: "auto" }}
             disabled={isRunning}
           >
             <LuPlay />
             Run
           </Button>
         )}
-      </HStack>
+      </Stack>
 
       {algorithm.status && (
         <Alert.Root status="warning" variant="subtle">
@@ -187,7 +199,7 @@ export default function ConfigPanel({
               This operation takes no input. Press Run to execute.
             </Text>
           ) : (
-            <Stack gap="3" flex="1" minH="0" overflowY="auto">
+            <Stack gap="3">
               {fields.map((field) => (
                 <FieldInput
                   key={field.key}

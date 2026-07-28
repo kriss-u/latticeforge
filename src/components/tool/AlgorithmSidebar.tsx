@@ -1,6 +1,16 @@
 import { useMemo, useState } from "react"
-import { Badge, Box, HStack, Input, Stack, Text } from "@chakra-ui/react"
-import { LuSearch } from "react-icons/lu"
+import {
+  Badge,
+  Box,
+  Drawer,
+  HStack,
+  IconButton,
+  Input,
+  Portal,
+  Stack,
+  Text,
+} from "@chakra-ui/react"
+import { LuMenu, LuSearch, LuX } from "react-icons/lu"
 import { algorithmCategories, algorithms } from "@/data/algorithms"
 import type { Algorithm } from "@/types/algorithm"
 
@@ -14,6 +24,7 @@ export default function AlgorithmSidebar({
   onSelect,
 }: AlgorithmSidebarProps) {
   const [query, setQuery] = useState("")
+  const [isOpen, setIsOpen] = useState(false)
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -25,15 +36,10 @@ export default function AlgorithmSidebar({
     )
   }, [query])
 
-  return (
-    <Stack
-      gap="4"
-      p="4"
-      borderRightWidth={{ base: "0", md: "1px" }}
-      borderBottomWidth={{ base: "1px", md: "0" }}
-      h="full"
-      overflowY="auto"
-    >
+  const selectedAlgorithm = algorithms.find((a) => a.id === selectedId)
+
+  const list = (
+    <Stack gap="4">
       <Box position="relative">
         <Box
           position="absolute"
@@ -80,7 +86,10 @@ export default function AlgorithmSidebar({
                     <Box
                       key={algorithm.id}
                       as="button"
-                      onClick={() => onSelect(algorithm)}
+                      onClick={() => {
+                        onSelect(algorithm)
+                        setIsOpen(false)
+                      }}
                       textAlign="left"
                       w="full"
                       px="3"
@@ -119,5 +128,64 @@ export default function AlgorithmSidebar({
         )}
       </Stack>
     </Stack>
+  )
+
+  return (
+    <Box h={{ base: "auto", md: "full" }}>
+      <HStack
+        as="button"
+        display={{ base: "flex", md: "none" }}
+        onClick={() => setIsOpen(true)}
+        justify="space-between"
+        w="full"
+        p="4"
+      >
+        <HStack gap="2.5">
+          <LuMenu size={18} />
+          <Stack gap="0" align="flex-start">
+            <Text fontSize="xs" fontWeight="semibold" color="fg.muted" textTransform="uppercase" letterSpacing="wide">
+              Algorithm
+            </Text>
+            <Text fontWeight="medium" fontSize="sm">
+              {selectedAlgorithm?.name ?? "Select an algorithm"}
+            </Text>
+          </Stack>
+        </HStack>
+      </HStack>
+
+      <Box
+        display={{ base: "none", md: "block" }}
+        p="4"
+        borderRightWidth="1px"
+        h="full"
+        overflowY="auto"
+      >
+        {list}
+      </Box>
+
+      <Drawer.Root
+        open={isOpen}
+        onOpenChange={(d) => setIsOpen(d.open)}
+        placement="start"
+        size="xs"
+      >
+        <Portal>
+          <Drawer.Backdrop />
+          <Drawer.Positioner>
+            <Drawer.Content>
+              <Drawer.Header>
+                <Drawer.Title>Algorithms</Drawer.Title>
+                <Drawer.CloseTrigger asChild>
+                  <IconButton aria-label="Close" size="sm" variant="ghost">
+                    <LuX />
+                  </IconButton>
+                </Drawer.CloseTrigger>
+              </Drawer.Header>
+              <Drawer.Body>{list}</Drawer.Body>
+            </Drawer.Content>
+          </Drawer.Positioner>
+        </Portal>
+      </Drawer.Root>
+    </Box>
   )
 }

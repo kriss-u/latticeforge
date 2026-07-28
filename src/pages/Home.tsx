@@ -87,11 +87,20 @@ export default function Home() {
 
   return (
     <Grid
-      h="full"
+      h={{ base: "auto", md: "full" }}
+      minH={{ base: "auto", md: "full" }}
       p={{ base: "3", md: "4" }}
       gap={{ base: "3", md: "4" }}
-      templateColumns={{ base: "1fr", md: "260px 1fr", xl: "280px 1fr 1fr" }}
-      templateRows={{ base: "auto auto auto", md: "1fr 1fr", xl: "1fr" }}
+      templateColumns={{
+        base: "1fr",
+        md: "260px 1fr",
+        xl: "280px minmax(0, 1fr) minmax(0, 1fr)",
+      }}
+      templateRows={{
+        base: "auto auto auto",
+        md: "auto minmax(200px, 1fr)",
+        xl: "1fr",
+      }}
       templateAreas={{
         base: `"sidebar" "center" "output"`,
         md: `"sidebar center" "sidebar output"`,
@@ -107,7 +116,12 @@ export default function Home() {
         </Box>
       </GridItem>
 
-      <GridItem area="center" minH="0" asChild>
+      <GridItem
+        area="center"
+        minH="0"
+        alignSelf={{ base: "stretch", md: "start" }}
+        asChild
+      >
         <Box {...glassPanel}>
           <ConfigPanel
             algorithm={algorithm}
