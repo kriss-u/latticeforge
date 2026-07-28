@@ -9,12 +9,13 @@ import {
   HStack,
   IconButton,
   Input,
+  Link,
   NativeSelect,
   Stack,
   Text,
   Textarea,
 } from "@chakra-ui/react"
-import { LuPlay, LuUpload } from "react-icons/lu"
+import { LuExternalLink, LuPlay, LuUpload } from "react-icons/lu"
 import { bytesToHex } from "@noble/hashes/utils.js"
 import { algorithmRegistry } from "@/lib/registry"
 import type { Algorithm, FieldDef, OperationPayload } from "@/types/algorithm"
@@ -95,6 +96,26 @@ export default function ConfigPanel({
           <Text fontSize="sm" color="fg.muted">
             {algorithm.description}
           </Text>
+          <HStack gap="3" mt="1">
+            <Link
+              href={algorithm.wikiUrl}
+              target="_blank"
+              rel="noreferrer"
+              color="brand.fg"
+              fontSize="xs"
+            >
+              Wikipedia <LuExternalLink />
+            </Link>
+            <Link
+              href={algorithm.nistUrl}
+              target="_blank"
+              rel="noreferrer"
+              color="brand.fg"
+              fontSize="xs"
+            >
+              NIST spec <LuExternalLink />
+            </Link>
+          </HStack>
         </Box>
         {!algorithm.status && (
           <Button

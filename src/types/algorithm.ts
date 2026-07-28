@@ -27,6 +27,10 @@ export interface Algorithm {
   operations: string[]
   /** Present when the algorithm is listed but not runnable yet (e.g. no audited implementation). */
   status?: AlgorithmStatus
+  /** Link to the algorithm's Wikipedia article. */
+  wikiUrl: string
+  /** Link to the NIST spec/announcement page for the standard. */
+  nistUrl: string
 }
 
 export interface FieldDef {

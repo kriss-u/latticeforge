@@ -15,6 +15,8 @@ export const algorithms: Algorithm[] = [
       { id: "ml-kem-1024", label: "ML-KEM-1024" },
     ],
     operations: ["Keygen", "Encapsulate", "Decapsulate"],
+    wikiUrl: "https://en.wikipedia.org/wiki/ML-KEM",
+    nistUrl: "https://csrc.nist.gov/pubs/fips/203/final",
   },
   {
     id: "ml-dsa",
@@ -30,6 +32,8 @@ export const algorithms: Algorithm[] = [
       { id: "ml-dsa-87", label: "ML-DSA-87" },
     ],
     operations: ["Keygen", "Sign", "Verify"],
+    wikiUrl: "https://en.wikipedia.org/wiki/NIST_Post-Quantum_Cryptography_Standardization",
+    nistUrl: "https://csrc.nist.gov/pubs/fips/204/final",
   },
   {
     id: "fn-dsa",
@@ -44,6 +48,8 @@ export const algorithms: Algorithm[] = [
       { id: "fn-dsa-1024", label: "FN-DSA-1024" },
     ],
     operations: ["Keygen", "Sign", "Verify"],
+    wikiUrl: "https://en.wikipedia.org/wiki/Falcon_(signature_scheme)",
+    nistUrl: "https://csrc.nist.gov/projects/post-quantum-cryptography/post-quantum-cryptography-standardization",
   },
   {
     id: "slh-dsa",
@@ -59,6 +65,8 @@ export const algorithms: Algorithm[] = [
       { id: "slh-dsa-256s", label: "SLH-DSA-256s" },
     ],
     operations: ["Keygen", "Sign", "Verify"],
+    wikiUrl: "https://en.wikipedia.org/wiki/SPHINCS+",
+    nistUrl: "https://csrc.nist.gov/pubs/fips/205/final",
   },
   {
     id: "hqc",
@@ -74,6 +82,8 @@ export const algorithms: Algorithm[] = [
       label: "Draft standard",
       note: "NIST selected HQC in March 2025 as the backup KEM in case a future weakness is found in lattice-based ML-KEM. Its FIPS standard is still in draft (expected around 2027), and no independently audited JavaScript/WASM implementation exists yet. LatticeForge will add it once one does.",
     },
+    wikiUrl: "https://en.wikipedia.org/wiki/NIST_Post-Quantum_Cryptography_Standardization",
+    nistUrl: "https://csrc.nist.gov/news/2025/hqc-announced-as-a-4th-round-selection",
   },
   {
     id: "lms-xmss",
@@ -89,6 +99,8 @@ export const algorithms: Algorithm[] = [
       label: "Not yet available",
       note: "LMS (RFC 8554) and XMSS (RFC 8391) were approved by NIST via SP 800-208, predating the main PQC competition. Unlike SLH-DSA, they are stateful — reusing a one-time key destroys security — which makes them risky to expose through a simple input/output tool without dedicated key-state management. No independently audited JS implementation was found either, so LatticeForge doesn't implement them yet.",
     },
+    wikiUrl: "https://en.wikipedia.org/wiki/Hash-based_cryptography",
+    nistUrl: "https://csrc.nist.gov/pubs/sp/800/208/final",
   },
 ]
 
