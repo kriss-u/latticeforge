@@ -1,0 +1,14 @@
+{
+  "name": "LatticeForge — Post-Quantum Cryptography Toolkit",
+  "short_name": "LatticeForge",
+  "description": "Run NIST-standardized post-quantum cryptography algorithms — ML-KEM, ML-DSA, FN-DSA, and SLH-DSA — entirely in your browser.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#052625",
+  "theme_color": "#124342",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

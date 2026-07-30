@@ -1,8 +1,18 @@
 import { Box, Heading, Link, Stack, Text } from "@chakra-ui/react"
+import { Helmet } from "react-helmet-async"
+import { routes } from "@/routes"
 
 export default function About() {
   return (
     <Box maxW="2xl" mx="auto" px={{ base: "4", md: "0" }} py={{ base: "8", md: "14" }}>
+      <Helmet>
+        <title>About LatticeForge — Post-Quantum Cryptography Toolkit</title>
+        <meta
+          name="description"
+          content="LatticeForge runs NIST-standardized post-quantum algorithms — ML-KEM, ML-DSA, FN-DSA, and SLH-DSA — entirely client-side in your browser, with no server round-trip."
+        />
+        <link rel="canonical" href={`https://latticeforge.nepcodex.com${routes.about}`} />
+      </Helmet>
       <Stack gap="6">
         <Stack gap="2">
           <Heading size="2xl" letterSpacing="tight">

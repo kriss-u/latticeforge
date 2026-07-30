@@ -2,10 +2,91 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="LatticeForge — a focused toolkit for post-quantum cryptography: ML-KEM, ML-DSA, FN-DSA, and SLH-DSA." />
-    <title>LatticeForge</title>
+
+    <title>LatticeForge — Post-Quantum Cryptography Toolkit (ML-KEM, ML-DSA, FN-DSA, SLH-DSA)</title>
+    <meta
+      name="description"
+      content="Run NIST-standardized post-quantum cryptography algorithms — ML-KEM (Kyber), ML-DSA (Dilithium), FN-DSA (Falcon), and SLH-DSA (SPHINCS+) — entirely in your browser. Generate keys, encapsulate, sign, and verify with no server round-trip."
+    />
+    <meta
+      name="keywords"
+      content="post-quantum cryptography, PQC, ML-KEM, Kyber, ML-DSA, Dilithium, FN-DSA, Falcon, SLH-DSA, SPHINCS+, NIST FIPS 203, FIPS 204, FIPS 205, FIPS 206, lattice cryptography, quantum-resistant encryption, digital signatures, key encapsulation"
+    />
+    <meta name="author" content="Krishna Upadhyay" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="theme-color" content="#124342" />
+    <link rel="canonical" href="https://latticeforge.nepcodex.com/" />
+
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="LatticeForge" />
+    <meta property="og:title" content="LatticeForge — Post-Quantum Cryptography Toolkit" />
+    <meta
+      property="og:description"
+      content="Run NIST-standardized post-quantum algorithms — ML-KEM, ML-DSA, FN-DSA, and SLH-DSA — entirely in your browser. No server round-trip, no chaining, just a single algorithm run against your input."
+    />
+    <meta property="og:url" content="https://latticeforge.nepcodex.com/" />
+    <meta property="og:image" content="https://latticeforge.nepcodex.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="LatticeForge — Post-Quantum Cryptography Toolkit" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="LatticeForge — Post-Quantum Cryptography Toolkit" />
+    <meta
+      name="twitter:description"
+      content="Run NIST-standardized post-quantum algorithms — ML-KEM, ML-DSA, FN-DSA, and SLH-DSA — entirely in your browser."
+    />
+    <meta name="twitter:image" content="https://latticeforge.nepcodex.com/og-image.png" />
+    <meta name="twitter:image:alt" content="LatticeForge — Post-Quantum Cryptography Toolkit" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "LatticeForge",
+        "url": "https://latticeforge.nepcodex.com/",
+        "description": "A focused, browser-based toolkit for post-quantum cryptography. Pick a NIST-standardized algorithm, configure it, and run it against your input — all client-side.",
+        "applicationCategory": "SecurityApplication",
+        "operatingSystem": "Any (runs in web browser)",
+        "browserRequirements": "Requires JavaScript",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Krishna Upadhyay"
+        },
+        "featureList": [
+          "ML-KEM (Kyber) key encapsulation — FIPS 203",
+          "ML-DSA (Dilithium) digital signatures — FIPS 204",
+          "FN-DSA (Falcon) digital signatures — FIPS 206",
+          "SLH-DSA (SPHINCS+) hash-based signatures — FIPS 205"
+        ],
+        "isAccessibleForFree": true
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -2,6 +2,7 @@ import { Box, Flex, HStack, Text } from "@chakra-ui/react"
 import { Link as RouterLink, Outlet } from "react-router-dom"
 import { ColorModeButton } from "@/components/ui/color-mode"
 import Logo from "@/components/Logo"
+import { routes } from "@/routes"
 
 export default function Layout() {
   return (
@@ -49,7 +50,7 @@ export default function Layout() {
         backdropFilter="blur(20px) saturate(140%)"
       >
         <HStack asChild gap="2.5" _hover={{ opacity: 0.85 }}>
-          <RouterLink to="/">
+          <RouterLink to={routes.home}>
             <Box color="fg.default" flexShrink="0">
               <Logo size={24} />
             </Box>
@@ -60,7 +61,7 @@ export default function Layout() {
         </HStack>
         <Box flex="1" />
         <Text asChild fontSize="sm" color="fg.muted" _hover={{ color: "fg.default" }}>
-          <RouterLink to="/about">About</RouterLink>
+          <RouterLink to={routes.about}>About</RouterLink>
         </Text>
         <ColorModeButton />
       </HStack>

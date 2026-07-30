@@ -1,10 +1,12 @@
 import { useState } from "react"
-import { Box, Grid, GridItem, type BoxProps } from "@chakra-ui/react"
+import { Box, Grid, GridItem, VisuallyHidden, type BoxProps } from "@chakra-ui/react"
+import { Helmet } from "react-helmet-async"
 import AlgorithmSidebar from "@/components/tool/AlgorithmSidebar"
 import ConfigPanel from "@/components/tool/ConfigPanel"
 import OutputPanel from "@/components/tool/OutputPanel"
 import { algorithms } from "@/data/algorithms"
 import { algorithmRegistry } from "@/lib/registry"
+import { routes } from "@/routes"
 import type { Algorithm, OperationPayload, OperationResult } from "@/types/algorithm"
 
 /** Minimum visible duration for the Run loading state, so fast ops still register as feedback. */
@@ -86,68 +88,81 @@ export default function Home() {
   }
 
   return (
-    <Grid
-      h={{ base: "auto", md: "full" }}
-      minH={{ base: "auto", md: "full" }}
-      p={{ base: "3", md: "4" }}
-      gap={{ base: "3", md: "4" }}
-      templateColumns={{
-        base: "1fr",
-        md: "260px 1fr",
-        xl: "280px minmax(0, 1fr) minmax(0, 1fr)",
-      }}
-      templateRows={{
-        base: "auto auto auto",
-        md: "auto minmax(200px, 1fr)",
-        xl: "1fr",
-      }}
-      templateAreas={{
-        base: `"sidebar" "center" "output"`,
-        md: `"sidebar center" "sidebar output"`,
-        xl: `"sidebar center output"`,
-      }}
-    >
-      <GridItem area="sidebar" minH="0" asChild>
-        <Box {...glassPanel}>
-          <AlgorithmSidebar
-            selectedId={algorithm.id}
-            onSelect={handleSelectAlgorithm}
-          />
-        </Box>
-      </GridItem>
-
-      <GridItem
-        area="center"
-        minH="0"
-        alignSelf={{ base: "stretch", md: "start" }}
-        asChild
+    <>
+      <Helmet>
+        <title>LatticeForge — Post-Quantum Cryptography Toolkit (ML-KEM, ML-DSA, FN-DSA, SLH-DSA)</title>
+        <meta
+          name="description"
+          content="Run NIST-standardized post-quantum cryptography algorithms — ML-KEM (Kyber), ML-DSA (Dilithium), FN-DSA (Falcon), and SLH-DSA (SPHINCS+) — entirely in your browser. Generate keys, encapsulate, sign, and verify with no server round-trip."
+        />
+        <link rel="canonical" href={`https://latticeforge.nepcodex.com${routes.home}`} />
+      </Helmet>
+      <VisuallyHidden asChild>
+        <h1>LatticeForge — Post-Quantum Cryptography Toolkit</h1>
+      </VisuallyHidden>
+      <Grid
+        h={{ base: "auto", md: "full" }}
+        minH={{ base: "auto", md: "full" }}
+        p={{ base: "3", md: "4" }}
+        gap={{ base: "3", md: "4" }}
+        templateColumns={{
+          base: "1fr",
+          md: "260px 1fr",
+          xl: "280px minmax(0, 1fr) minmax(0, 1fr)",
+        }}
+        templateRows={{
+          base: "auto auto auto",
+          md: "auto minmax(200px, 1fr)",
+          xl: "1fr",
+        }}
+        templateAreas={{
+          base: `"sidebar" "center" "output"`,
+          md: `"sidebar center" "sidebar output"`,
+          xl: `"sidebar center output"`,
+        }}
       >
-        <Box {...glassPanel}>
-          <ConfigPanel
-            algorithm={algorithm}
-            variantId={variantId}
-            onVariantChange={setVariantId}
-            operation={operation}
-            onOperationChange={handleOperationChange}
-            payload={payload}
-            onPayloadChange={handlePayloadChange}
-            onRun={handleRun}
-            isRunning={isRunning}
-          />
-        </Box>
-      </GridItem>
+        <GridItem area="sidebar" minH="0" asChild>
+          <Box {...glassPanel}>
+            <AlgorithmSidebar
+              selectedId={algorithm.id}
+              onSelect={handleSelectAlgorithm}
+            />
+          </Box>
+        </GridItem>
 
-      <GridItem area="output" minH="0" asChild>
-        <Box {...glassPanel}>
-          <OutputPanel
-            algorithmId={algorithm.id}
-            variantId={variantId}
-            result={result}
-            error={error}
-            isRunning={isRunning}
-          />
-        </Box>
-      </GridItem>
-    </Grid>
+        <GridItem
+          area="center"
+          minH="0"
+          alignSelf={{ base: "stretch", md: "start" }}
+          asChild
+        >
+          <Box {...glassPanel}>
+            <ConfigPanel
+              algorithm={algorithm}
+              variantId={variantId}
+              onVariantChange={setVariantId}
+              operation={operation}
+              onOperationChange={handleOperationChange}
+              payload={payload}
+              onPayloadChange={handlePayloadChange}
+              onRun={handleRun}
+              isRunning={isRunning}
+            />
+          </Box>
+        </GridItem>
+
+        <GridItem area="output" minH="0" asChild>
+          <Box {...glassPanel}>
+            <OutputPanel
+              algorithmId={algorithm.id}
+              variantId={variantId}
+              result={result}
+              error={error}
+              isRunning={isRunning}
+            />
+          </Box>
+        </GridItem>
+      </Grid>
+    </>
   )
 }
