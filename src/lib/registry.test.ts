@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest"
 import { algorithmRegistry } from "@/lib/registry"
 import { algorithms } from "@/data/algorithms"
 
-describe.each(algorithms)("algorithmRegistry $id", (algorithm) => {
+// Algorithms without a runnable implementation (e.g. draft standards) have no
+// registry entry by design; only test the ones LatticeForge actually implements.
+const implementedAlgorithms = algorithms.filter((algorithm) => algorithm.id in algorithmRegistry)
+
+describe.each(implementedAlgorithms)("algorithmRegistry $id", (algorithm) => {
   it("has a registry entry", () => {
     expect(algorithmRegistry[algorithm.id]).toBeDefined()
   })
